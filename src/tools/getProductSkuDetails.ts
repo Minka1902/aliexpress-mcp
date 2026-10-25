@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { config } from '../config.js';
 import { id, locale, shipToCountry } from '../schemas.js';
 import type { ToolDefinition } from '../types.js';
 
@@ -7,7 +8,7 @@ const inputSchema = {
   sku_ids: z.array(id).optional().describe('SKU IDs to return. Omit for all SKUs'),
   need_deliver_info: z.enum(['Yes', 'No']).optional().describe('Include delivery info'),
   ...locale,
-  ...shipToCountry,
+  ship_to_country: config.defaults.ship_to_country ? shipToCountry.ship_to_country : z.string().describe('Destination country code (e.g. US) for prices and availability. Required because ALIEXPRESS_COUNTRY is not set'),
 };
 
 const getProductSkuDetails: ToolDefinition = {

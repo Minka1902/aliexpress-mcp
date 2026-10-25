@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { country, dateTime, fields, id, locale, pagination, trackingId } from '../schemas.js';
 import type { ToolDefinition } from '../types.js';
+import { range } from '../validators.js';
 
 const SORTS = ['commissionAsc', 'commissionDesc', 'priceAsc', 'priceDesc', 'volumeAsc', 'volumeDesc', 'discountAsc', 'discountDesc', 'ratingAsc', 'ratingDesc', 'promotionTimeAsc', 'promotionTimeDesc'] as const;
 
@@ -23,6 +24,7 @@ const getFeaturedPromoProducts: ToolDefinition = {
   description: 'Get products (with affiliate links) belonging to a featured AliExpress promotion.',
   method: 'aliexpress.affiliate.featuredpromo.products.get',
   inputSchema,
+  validate: range('promotion_start_time', 'promotion_end_time'),
 };
 
 export { getFeaturedPromoProducts };

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { dateTime, fields, localeSite, pagination } from '../schemas.js';
 import type { ToolDefinition } from '../types.js';
+import { range } from '../validators.js';
 
 const inputSchema = {
   start_time: dateTime.describe('Range start, YYYY-MM-DD HH:mm:ss'),
@@ -18,6 +19,7 @@ const listOrders: ToolDefinition = {
   description: 'List affiliate orders in a time range filtered by status.',
   method: 'aliexpress.affiliate.order.list',
   inputSchema,
+  validate: range('start_time', 'end_time'),
 };
 
 export { listOrders };

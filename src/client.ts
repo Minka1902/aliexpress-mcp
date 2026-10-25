@@ -16,7 +16,7 @@ const serialize = (params: Record<string, unknown>) => {
   for (const key in params) {
     const value = params[key];
     if (value === undefined || value === null) continue;
-    out[key] = Array.isArray(value) ? value.join(',') : String(value);
+    out[key] = Array.isArray(value) ? value.map((item) => String(item).replaceAll(',', '%2C')).join(',') : String(value);
   }
   return out;
 };
@@ -32,13 +32,15 @@ const callApi = async (method: string, params: Record<string, unknown>) => {
   body.sign = sign(body);
 
   const response = await fetch(config.apiUrl, { method: 'POST', headers: HEADERS, body: new URLSearchParams(body) });
+  const data = await response.json().catch(() => {
+    throw new Error(`Gateway returned non-JSON (HTTP ${response.status} ${response.statusText})`);
+  });
+
+  const error = data?.error_response;
+  if (error) throw new Error(`${error.code}: ${error.sub_msg || error.msg}`);
   if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
 
-  const data = await response.json();
-  const { error_response: error } = data;
-  if (error) throw new Error(`${error.code}: ${error.sub_msg || error.msg}`);
-
-  const payload = data[`${method.replaceAll('.', '_')}_response`];
+  const payload = data?.[`${method.replaceAll('.', '_')}_response`];
   if (!payload) throw new Error(`Unexpected response: ${JSON.stringify(data)}`);
 
   const { resp_result: result } = payload;

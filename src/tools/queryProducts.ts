@@ -1,4 +1,4 @@
-import { productQuery } from '../schemas.js';
+import { productQuery, productQueryValidate } from '../schemas.js';
 import type { ToolDefinition } from '../types.js';
 
 const queryProducts: ToolDefinition = {
@@ -7,6 +7,7 @@ const queryProducts: ToolDefinition = {
   description: 'Search AliExpress affiliate products by keywords, categories, price and more, with affiliate links.',
   method: 'aliexpress.affiliate.product.query',
   inputSchema: productQuery,
+  validate: productQueryValidate,
 };
 
 export { queryProducts };
